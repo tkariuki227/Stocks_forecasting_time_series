@@ -171,10 +171,10 @@ Build a mobile-ready UI or Android wrapper for retail investors
 
 ## Credits
 
-- Daniel Mutiso [Github link](https://github.com/dantegaucho)
-- Stephen Kamiru [Github link](https://github.com/Kamiru17)
-- Teresia Wanjiku [Github link](https://github.com/tkariuki227)
-- Sylvia Mwangi [Github link](https://github.com/Sylvia-W-Mwangi)
+- [Daniel Mutiso](https://github.com/dantegaucho)
+- [Stephen Kamiru](https://github.com/Kamiru17)
+- [Teresia Wanjiku](https://github.com/tkariuki227)
+- [Sylvia Mwangi](https://github.com/Sylvia-W-Mwangi)
 
 - Meggy Donna [Github link](https://github.com/MegAtaro)
 
