@@ -1,4 +1,4 @@
-# import NSE_TIME_SERIES_ANALYSIS.nse as st
+
 import streamlit as st  # For building the web app interface
 import numpy as np
 import tensorflow as tf
@@ -10,7 +10,10 @@ from PIL import Image
 import requests
 import pandas as pd
 from keras.models import load_model
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
 
 # Kenyan flag
 flag_url = "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg"
@@ -24,6 +27,40 @@ with header_col1:
 # Load the dataset
 # Make sure the path to your CSV file is correct
 df = pd.read_csv('NSE_2021_2024_Final.csv')
+
+# use preprocessing pipeline 
+# Create a pipeline for pre-processing
+def create_preprocessing_pipeline(numerical_features, categorical_features):
+    # Define numerical transformations
+    numerical_transformer = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='mean')),
+        ('scaler', StandardScaler())
+    ])
+
+    # Define categorical transformations
+    categorical_transformer = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='most_frequent')),
+        ('onehot', OneHotEncoder(handle_unknown='ignore'))
+    ])
+
+    # Combine transformations
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', numerical_transformer, numerical_features),
+            ('cat', categorical_transformer, categorical_features)
+        ]
+    )
+
+    return preprocessor
+# Define numerical and categorical columns
+numerical_cols = ['Day Price', '12m Low', '12m High', 'Day Low', 'Day High', 'Volume', 'Change', 'Change%']
+categorical_cols = ['Code', 'Name', 'Sector']
+
+# call the function to create the preprocessor
+preprocessor = create_preprocessing_pipeline(numerical_cols, categorical_cols)
+# create binary target variable
+df['Target'] = (df['Day Price'] > df['Day Price'].shift(1)).astype(int)
+print(df['Target'].value_counts())
 
 # Load your pre-trained model
 # Make sure the path to your model file is correct
