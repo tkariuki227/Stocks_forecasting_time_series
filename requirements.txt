@@ -12,7 +12,8 @@ jinja2==3.1.6
 jsonschema==4.25.0
 jsonschema-specifications==2025.4.1
 markupsafe==3.0.2
-narwhals==1.48.1[2025-07-25 18:56:25.521348] numpy==2.3.2
+narwhals==1.48.1 
+numpy
 packaging==25.0
 pandas==2.3.1
 pillow==11.3.0
