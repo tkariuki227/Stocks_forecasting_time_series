@@ -32,6 +32,8 @@ tenacity==9.1.2
 toml==0.10.2
 tornado==6.5.1
 typing-extensions==4.14.1
+pystan==2.19.1.1
+prophet
 tzdata==2025.2
 urllib3==2.5.0
 watchdog==6.0.0
