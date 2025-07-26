@@ -13,7 +13,8 @@ setup(
         'plotly>=5.15.0',
         'tensorflow>=2.12.0',
         'scikit-learn>=1.2.0',
-        'joblib>=1.2.0'
+        'joblib>=1.2.0',
+         'prophet'
     ],
     entry_points={
         'console_scripts': [
