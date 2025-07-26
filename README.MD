@@ -170,11 +170,10 @@ Add portfolio builder or backtesting tools
 Build a mobile-ready UI or Android wrapper for retail investors
 
 ## Credits
-
+- [Sylvia Mwangi](https://github.com/Sylvia-W-Mwangi)
 - [Daniel Mutiso](https://github.com/dantegaucho)
 - [Stephen Kamiru](https://github.com/Kamiru17)
 - [Teresia Wanjiku](https://github.com/tkariuki227)
-- [Sylvia Mwangi](https://github.com/Sylvia-W-Mwangi)
 - [Meggy Donna](https://github.com/MegAtaro)
 
 ---
