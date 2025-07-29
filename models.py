@@ -1,20 +1,28 @@
+#  We shall import the necessary modules for the models we are going to build:
 from prophet import Prophet
 import pandas as pd
 import os
 
+# We need to define the parameters that we will use to make our predictions. We will generate 2 LSTM models. The first model, that will basically act like the base model will make predictions based off one feature, `Day Price`. The enhanced model will then make predictions using several features that were generated through feature engineering. The features in question are as shown in the list below:
 features = ['Day Price', '30_day_SMA', '30_day_EMA', '100_day_SMA', '100_day_EMA']
 
+# Now, let us load our data:
 merged_df = pd.read_pickle('merged_nse_df.pkl')
 
+# Prophet model:
 def predict_prophet(merged_df):
     df_prophet = merged_df[['Date', 'Day Price']].rename(columns={'Date':'ds', 'Day Price':'y'})
     m = Prophet(daily_seasonality=True)
     m.fit(df_prophet)
 
+# Once the function has been defined, we shall predict the subsequent 30 days:
     future = m.make_future_dataframe(periods=30)
     forecast = m.predict(future)
     return forecast
 
+
+# LSTM Models:
+# The target column for both models is the day price. The only difference is that one will use more features to predict the day price!
 def predict_with_lstm(merged_df, features=features, target_col = 'Day Price', lookback_days=100, epochs=50, future_days=0, save_model=False):
     import numpy as np
     from sklearn.preprocessing import MinMaxScaler
@@ -32,7 +40,7 @@ def predict_with_lstm(merged_df, features=features, target_col = 'Day Price', lo
     data_training = target_data[:train_size]
     data_testing  = target_data[train_size:]
 
-    #  Scale
+    #  Scale the training data
     scaler = MinMaxScaler(feature_range=(0,1))
     data_training_scaled = scaler.fit_transform(data_training)
 
@@ -43,6 +51,7 @@ def predict_with_lstm(merged_df, features=features, target_col = 'Day Price', lo
         y_train.append(data_training_scaled[i, target_idx])
     X_train, y_train = np.array(X_train), np.array(y_train)
 
+# We need to save our model to prevent retraining it everytime the application is ran.
     model_path = "lstm_final_model.h5"
     if os.path.exists(model_path) and not save_model:
         print("Loading existing LSTM model...")
@@ -50,7 +59,7 @@ def predict_with_lstm(merged_df, features=features, target_col = 'Day Price', lo
         model = load_model(model_path)
     else:
 
-    #  LSTM model
+    #  LSTM models
         model = Sequential()
         model.add(LSTM(units=70, activation='relu', return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
         model.add(Dropout(0.1))
@@ -66,7 +75,7 @@ def predict_with_lstm(merged_df, features=features, target_col = 'Day Price', lo
         #  Train
         model.fit(X_train, y_train, epochs=epochs, batch_size=32, verbose=0)
 
-        #  Save model after training (optional)
+        #  Save model after training.
         if save_model:
             model.save(model_path)
             print("Model saved as lstm_model.h5")
@@ -85,7 +94,7 @@ def predict_with_lstm(merged_df, features=features, target_col = 'Day Price', lo
     #  Predict
     y_pred_scaled = model.predict(X_test)
 
-    # Rescale ONLY the target column
+    # Rescale the target column. This is because we had scaled it to 0s and 1s. Therefore, we need to rescale it for it to make more sense to the target audience.
     dummy = np.zeros((len(y_pred_scaled), len(features))) # same feature count
     dummy[:, target_idx] = y_pred_scaled[:, 0]
     y_pred = scaler.inverse_transform(dummy)[:, target_idx]
@@ -126,10 +135,5 @@ def predict_with_lstm(merged_df, features=features, target_col = 'Day Price', lo
     future_dates = pd.date_range(last_date, periods=future_days+1, freq='B')[1:]
     future_df = pd.DataFrame({'date': future_dates, 'predicted': future_prices})
 
-    # future_prices = scaler.inverse_transform(np.array(future_preds).reshape(-1,1)).flatten()
-    # future_dates = pd.date_range(merged_df['Date'].iloc[-1], periods=future_days+1, freq='B')[1:]
-    # future_df = pd.DataFrame({'date': future_dates, 'predicted': future_prices})
-
     return result_df, future_df
 
-    # return result_df
